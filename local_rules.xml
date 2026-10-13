@@ -1,0 +1,308 @@
+<!-- Prey OCSF events. Rules hang off Wazuh's built-in OCSF entry rule 99000 (Amazon Security Lake),
+     which claims every event that has activity_id and category_uid. Children match metadata.event_code,
+     which every Prey event class carries. -->
+<group name="prey,">
+
+  <rule id="100100" level="3">
+    <if_sid>99000</if_sid>
+    <field name="metadata.product.name">^Prey$</field>
+    <description>Prey event: $(message)</description>
+  </rule>
+
+  <rule id="100101" level="8">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_left_geofence$</field>
+    <description>Prey: $(device.name) left geofence $(finding_info.analytic.name)</description>
+    <group>geofencing,</group>
+  </rule>
+
+  <rule id="100102" level="10">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_missing$</field>
+    <description>Prey: $(device.name) marked as missing</description>
+  </rule>
+
+  <rule id="100103" level="4">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_entered_geofence$</field>
+    <description>Prey: $(device.name) entered geofence $(finding_info.analytic.name)</description>
+    <group>geofencing,</group>
+  </rule>
+
+  <rule id="100104" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_recovered$</field>
+    <description>Prey: $(device.name) is no longer missing</description>
+  </rule>
+
+  <rule id="100105" level="6">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_unlocked$</field>
+    <description>Prey: $(device.name) was unlocked</description>
+  </rule>
+
+  <rule id="100106" level="6">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^hardware_changes$</field>
+    <description>Prey: hardware changes detected on $(device.name)</description>
+  </rule>
+
+  <rule id="100107" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^test$</field>
+    <description>Prey: SIEM test event received</description>
+  </rule>
+
+  <rule id="100108" level="6">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_action_requested$</field>
+    <description>Prey: $(unmapped.action) requested on $(device.name) by $(actor.user.name)</description>
+    <group>device_action,</group>
+  </rule>
+
+  <rule id="100109" level="12">
+    <if_sid>100108</if_sid>
+    <field name="unmapped.action">^wipe$|^fullwipe$|^fullwipewindows$|^factoryreset$</field>
+    <description>Prey: wipe ($(unmapped.action)) requested on $(device.name) by $(actor.user.name)</description>
+    <group>device_action,</group>
+  </rule>
+
+  <rule id="100110" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_action_cancelled$</field>
+    <description>Prey: $(unmapped.action) cancelled on $(device.name)</description>
+    <group>device_action,</group>
+  </rule>
+
+  <rule id="100111" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_action_started$</field>
+    <description>Prey: $(unmapped.action) started on $(device.name)</description>
+    <group>device_action,</group>
+  </rule>
+
+  <rule id="100112" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_action_failed$</field>
+    <description>Prey: $(unmapped.action) failed on $(device.name)</description>
+    <group>device_action,</group>
+  </rule>
+
+  <rule id="100113" level="12">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_wiped$</field>
+    <description>Prey: $(device.name) was wiped ($(unmapped.action))</description>
+    <group>device_action,</group>
+  </rule>
+
+  <rule id="100114" level="10">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^remote_session_started$</field>
+    <description>Prey: remote session started on $(device.name) by $(actor.user.name)</description>
+    <group>remote_access,</group>
+  </rule>
+
+  <rule id="100115" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^remote_session_ended$</field>
+    <description>Prey: remote session ended on $(device.name)</description>
+    <group>remote_access,</group>
+  </rule>
+
+  <rule id="100116" level="10">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_uninstalled$</field>
+    <description>Prey: Prey agent uninstalled from $(device.name)</description>
+    <group>tampering,</group>
+  </rule>
+
+  <rule id="100117" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_added$</field>
+    <description>Prey: $(device.name) added</description>
+  </rule>
+
+  <rule id="100118" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_deleted$</field>
+    <description>Prey: $(device.name) deleted by $(actor.user.name)</description>
+  </rule>
+
+  <rule id="100119" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_away$</field>
+    <description>Prey: $(device.name) not seen for 1 day</description>
+  </rule>
+
+  <rule id="100120" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_still_away$</field>
+    <description>Prey: $(device.name) not seen for 7 days</description>
+  </rule>
+
+  <rule id="100121" level="6">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_dead$</field>
+    <description>Prey: $(device.name) not seen for 30 days</description>
+  </rule>
+
+  <rule id="100122" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^device_resurrected$</field>
+    <description>Prey: $(device.name) is back online</description>
+  </rule>
+
+  <rule id="100123" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^location_permission_revoked$</field>
+    <description>Prey: location permission revoked on $(device.name)</description>
+    <group>tampering,</group>
+  </rule>
+
+  <rule id="100124" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^mdm_unenrolled$</field>
+    <description>Prey: $(device.name) unenrolled from MDM</description>
+    <group>tampering,</group>
+  </rule>
+
+  <rule id="100125" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^missing_report$</field>
+    <description>Prey: missing report received from $(device.name)</description>
+  </rule>
+
+  <rule id="100126" level="3">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^login_succeeded$</field>
+    <description>Prey: $(user.email_addr) logged in from $(src_endpoint.ip)</description>
+    <group>authentication_success,</group>
+  </rule>
+
+  <rule id="100127" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^login_failed$</field>
+    <description>Prey: failed login for $(user.email_addr) from $(src_endpoint.ip)</description>
+    <group>authentication_failed,</group>
+  </rule>
+
+  <rule id="100128" level="10" frequency="5" timeframe="300">
+    <if_matched_sid>100127</if_matched_sid>
+    <same_field>user.email_addr</same_field>
+    <description>Prey: 5 failed logins in 5 minutes for $(user.email_addr), possible brute force</description>
+    <group>authentication_failures,</group>
+  </rule>
+
+  <rule id="100129" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^password_changed$</field>
+    <description>Prey: password changed for $(user.email_addr)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100130" level="4">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^password_reset_requested$</field>
+    <description>Prey: password reset requested for $(user.email_addr)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100131" level="4">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^two_factor_enabled$</field>
+    <description>Prey: 2FA enabled for $(user.email_addr)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100132" level="8">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^two_factor_disabled$</field>
+    <description>Prey: 2FA disabled for $(user.email_addr)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100133" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^two_factor_recovery_code_regenerated$</field>
+    <description>Prey: 2FA recovery code regenerated for $(user.email_addr)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100134" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^user_created$</field>
+    <description>Prey: user $(user.email_addr) created by $(actor.user.name)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100135" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^user_deleted$</field>
+    <description>Prey: user $(user.email_addr) deleted by $(actor.user.name)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100136" level="8">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^user_role_changed$</field>
+    <description>Prey: role of $(user.email_addr) changed to $(unmapped.role_to) by $(actor.user.name)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100137" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^api_key_created$</field>
+    <description>Prey: API key $(unmapped.api_key) created for $(user.email_addr)</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100138" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^api_key_revoked$</field>
+    <description>Prey: API key $(unmapped.api_key) revoked</description>
+    <group>account_change,</group>
+  </rule>
+
+  <rule id="100139" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^sso_enabled$</field>
+    <description>Prey: SSO enabled by $(actor.user.name)</description>
+    <group>configuration,</group>
+  </rule>
+
+  <rule id="100140" level="9">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^sso_disabled$</field>
+    <description>Prey: SSO disabled by $(actor.user.name)</description>
+    <group>configuration,</group>
+  </rule>
+
+  <rule id="100141" level="8">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^sso_admin_enforcement_changed$</field>
+    <description>Prey: SSO enforcement for admins changed by $(actor.user.name)</description>
+    <group>configuration,</group>
+  </rule>
+
+  <rule id="100142" level="5">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^mdm_certificate_uploaded$</field>
+    <description>Prey: Apple MDM certificate uploaded by $(actor.user.name)</description>
+    <group>configuration,</group>
+  </rule>
+
+  <rule id="100143" level="8">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^mdm_certificate_deleted$</field>
+    <description>Prey: Apple MDM certificate deleted by $(actor.user.name)</description>
+    <group>configuration,</group>
+  </rule>
+
+  <rule id="100144" level="7">
+    <if_sid>100100</if_sid>
+    <field name="metadata.event_code">^location_history_exported$</field>
+    <description>Prey: location history exported by $(actor.user.name)</description>
+    <group>data_export,</group>
+  </rule>
+
+</group>
